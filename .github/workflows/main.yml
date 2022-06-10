@@ -1,0 +1,81 @@
+
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: build-${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-20.04]
+    steps:
+      - name: Add msbuild to PATH
+        if: runner.os == 'Windows'
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run:   |
+              sudo apt-get install build-essential git make cmake autoconf automake \
+                libtool pkg-config libasound2-dev libpulse-dev libaudio-dev libjack-dev \
+                libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev \
+                libxinerama-dev libxxf86vm-dev libxss-dev libgl1-mesa-dev libdbus-1-dev \
+                libudev-dev libgles2-mesa-dev libegl1-mesa-dev libibus-1.0-dev \
+                fcitx-libs-dev libsamplerate0-dev libsndio-dev libwayland-dev \
+                libxkbcommon-dev libdrm-dev libgbm-dev
+        shell: bash
+      - name: Clone repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Restore dotnet tools
+        run: dotnet tool restore
+      - name: Run CAKE
+        run: dotnet cake
+      - name: Package artifacts
+        uses: actions/upload-artifact@main
+        with:
+          name: SDL-${{ matrix.os }}
+          path: |
+            artifacts/*
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    needs: [ build ]
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+      - name: Clone repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Download artifacts for Windows x64
+        uses: actions/download-artifact@v3
+        with:
+          name: SDL-windows-latest
+          path: artifacts-windows-x64
+      - name: Download artifacts for macOS
+        uses: actions/download-artifact@v3
+        with:
+          name: SDL-macos-latest
+          path: artifacts-macos
+      - name: Download artifacts for Linux x64
+        uses: actions/download-artifact@v3
+        with:
+          name: SDL-ubuntu-20.04
+          path: artifacts-linux-x64
+      - name: Restore dotnet tools
+        run: dotnet tool restore
+      - name: Run CAKE
+        run: dotnet cake --target Package
+      - name: Push packages
+        run: dotnet nuget push bin/Release/*.nupkg --source https://nuget.pkg.github.com/$GITHUB_REPOSITORY_OWNER/index.json --api-key ${GITHUB_TOKEN}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

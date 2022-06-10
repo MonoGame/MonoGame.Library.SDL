@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <NoWarn>NU5128</NoWarn>
+    <Title>MonoGame build of SDL Library</Title>
+    <Description>This package contains an SDL library built for distributing MonoGame games..</Description>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="artifacts-windows-x64\SDL2.dll">
+      <Link>SDL2.dll</Link>
+      <PackagePath>runtimes\win-x64\native</PackagePath>
+    </Content>
+    <Content Include="artifacts-macos\libSDL2.dylib">
+      <Link>libSDL2.dylib</Link>
+      <PackagePath>runtimes\osx\native</PackagePath>
+    </Content>
+    <Content Include="artifacts-linux-x64\libSDL2-2.0.so.0">
+      <Link>libSDL2-2.0.so.0</Link>
+      <PackagePath>runtimes\linux-x64\native</PackagePath>
+    </Content>
+  </ItemGroup>
+
+</Project>
