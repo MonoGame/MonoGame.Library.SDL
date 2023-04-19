@@ -44,6 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       packages: write
+      contents: write
     needs: [ build ]
     if: ${{ github.event_name == 'push' }}
     steps:
@@ -78,4 +79,14 @@ jobs:
         run: dotnet nuget push bin/Release/*.nupkg --source https://nuget.pkg.github.com/$GITHUB_REPOSITORY_OWNER/index.json --api-key ${GITHUB_TOKEN}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Make a release
+        uses: ncipollo/release-action@v1
+        with:
+          name: 'MonoGame.Library.SDL ${{ github.ref_name }}'
+          tag: ${{ github.ref_name }}
+          allowUpdates: true
+          removeArtifacts: true
+          artifacts: "bin/Release/*.nupkg"
+          token: ${{ secrets.GITHUB_TOKEN }}
+        if: github.ref_type == 'tag'
 

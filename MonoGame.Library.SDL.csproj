@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <NoWarn>NU5128</NoWarn>
     <Title>MonoGame build of SDL Library</Title>
-    <Description>This package contains an SDL library built for distributing MonoGame games..</Description>
+    <Description>This package contains an SDL library built for distributing MonoGame games.</Description>
     <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
 
