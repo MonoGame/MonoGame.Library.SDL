@@ -2,7 +2,6 @@
 
 var target = Argument("target", "Build");
 var artifactsDir = "artifacts";
-var version = "2.0.22";
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -31,7 +30,7 @@ Task("BuildMacOS")
     var filePaths = new[] { "sdl/build-scripts/clang-fat.sh" };
 
     foreach (var filePath in filePaths)
-        ReplaceRegexInFiles(filePath, @"10\.6", "10.15", System.Text.RegularExpressions.RegexOptions.Singleline);
+        ReplaceRegexInFiles(filePath, @"10\.11", "10.15", System.Text.RegularExpressions.RegexOptions.Singleline);
 
     // Build
     var buildDir = "sdl/build";
@@ -61,15 +60,28 @@ Task("BuildLinux")
 
     // Copy artifact
     CreateDirectory(artifactsDir);
-    var versionSplit = version.Split('.');
-    CopyFile($"sdl/build/libSDL2-2.0.so.{versionSplit[1]}.{versionSplit[2]}.0", $"{artifactsDir}/libSDL2-2.0.so.0");
+    foreach (var filePath in GetFiles(buildDir + "/*"))
+    {
+        if (filePath.GetFilename().ToString().StartsWith("libSDL2-2.0.so.0."))
+        {
+            CopyFile(filePath, $"{artifactsDir}/libSDL2-2.0.so.0");
+            return;
+        }
+    }
+
+    throw new Exception("Failed to locate the artifact file of libSDL2-2.0.so :/");
 });
 
 Task("Package")
     .Does(() =>
 {
+    var sdlMajor = FindRegexMatchGroupInFile("sdl/include/SDL_version.h", @"#define SDL_MAJOR_VERSION +(?<ver>\d+)", 1, System.Text.RegularExpressions.RegexOptions.Singleline);
+    var sdlMinor = FindRegexMatchGroupInFile("sdl/include/SDL_version.h", @"#define SDL_MINOR_VERSION +(?<ver>\d+)", 1, System.Text.RegularExpressions.RegexOptions.Singleline);
+    var sdlPatch = FindRegexMatchGroupInFile("sdl/include/SDL_version.h", @"#define SDL_PATCHLEVEL +(?<ver>\d+)", 1, System.Text.RegularExpressions.RegexOptions.Singleline);
+    var sdlVersion = $"{sdlMajor}.{sdlMinor}.{sdlPatch}";
+    
     var dnMsBuildSettings = new DotNetMSBuildSettings();
-    dnMsBuildSettings.WithProperty("Version", version + "." + EnvironmentVariable("GITHUB_RUN_NUMBER"));
+    dnMsBuildSettings.WithProperty("Version", sdlVersion + "." + EnvironmentVariable("GITHUB_RUN_NUMBER"));
     dnMsBuildSettings.WithProperty("RepositoryUrl", "https://github.com/" + EnvironmentVariable("GITHUB_REPOSITORY"));
 
     var dnPackSettings = new DotNetPackSettings();
