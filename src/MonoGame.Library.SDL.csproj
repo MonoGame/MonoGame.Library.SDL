@@ -6,8 +6,11 @@
     <Title>MonoGame build of SDL Library</Title>
     <Description>This package contains an SDL library built for distributing MonoGame games.</Description>
     <IncludeBuildOutput>false</IncludeBuildOutput>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
-
+  <ItemGroup>
+      <None Include="..\sdl\LICENSE.txt" Pack="true" PackagePath="" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="..\artifacts-windows-x64\SDL2.dll">
       <Link>SDL2.dll</Link>
