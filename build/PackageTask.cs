@@ -14,7 +14,7 @@ public sealed class PackageTask : FrostingTask<BuildContext>
         dnMsBuildSettings.WithProperty("Version", sdlVersion + "." + context.EnvironmentVariable("GITHUB_RUN_NUMBER"));
         dnMsBuildSettings.WithProperty("RepositoryUrl", "https://github.com/" + context.EnvironmentVariable("GITHUB_REPOSITORY"));
 
-        context.DotNetPack("MonoGame.Library.SDL.csproj", new DotNetPackSettings
+        context.DotNetPack("src/MonoGame.Library.SDL.csproj", new DotNetPackSettings
         {
             MSBuildSettings = dnMsBuildSettings,
             Verbosity = DotNetVerbosity.Minimal,

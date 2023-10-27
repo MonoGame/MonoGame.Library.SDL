@@ -29,8 +29,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Restore dotnet tools
-        run: dotnet tool restore
       - name: Run CAKE
         run: dotnet run --project ./build/Build.csproj
       - name: Package artifacts
@@ -48,10 +46,6 @@ jobs:
     needs: [ build ]
     if: ${{ github.event_name == 'push' }}
     steps:
-      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '6.0.x'
       - name: Clone repository
         uses: actions/checkout@v4
         with:
@@ -74,7 +68,7 @@ jobs:
       - name: Run CAKE
         run: dotnet run --project ./build/Build.csproj -- "--target=Package"
       - name: Push packages
-        run: dotnet nuget push bin/Release/*.nupkg --source https://nuget.pkg.github.com/$GITHUB_REPOSITORY_OWNER/index.json --api-key ${GITHUB_TOKEN}
+        run: dotnet nuget push src/bin/Release/*.nupkg --source https://nuget.pkg.github.com/$GITHUB_REPOSITORY_OWNER/index.json --api-key ${GITHUB_TOKEN}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Make a release
