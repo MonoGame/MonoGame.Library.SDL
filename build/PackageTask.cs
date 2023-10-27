@@ -4,8 +4,6 @@ namespace BuildScripts;
 [TaskName("Package")]
 public sealed class PackageTask : FrostingTask<BuildContext>
 {
-    public override bool ShouldRun(BuildContext context) => context.IsRunningOnLinux();
-
     public override void Run(BuildContext context)
     {
         var sdlMajor = context.FindRegexMatchGroupInFile("sdl/include/SDL_version.h", @"#define SDL_MAJOR_VERSION +(?<ver>\d+)", 1, System.Text.RegularExpressions.RegexOptions.Singleline);

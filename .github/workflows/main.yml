@@ -32,7 +32,7 @@ jobs:
       - name: Restore dotnet tools
         run: dotnet tool restore
       - name: Run CAKE
-        run: dotnet cake
+        run: dotnet run --project ./build/Build.csproj
       - name: Package artifacts
         uses: actions/upload-artifact@main
         with:
@@ -71,10 +71,8 @@ jobs:
         with:
           name: SDL-ubuntu-20.04
           path: artifacts-linux-x64
-      - name: Restore dotnet tools
-        run: dotnet tool restore
       - name: Run CAKE
-        run: dotnet cake --target Package
+        run: dotnet run --project ./build/Build.csproj -- "--target=Package"
       - name: Push packages
         run: dotnet nuget push bin/Release/*.nupkg --source https://nuget.pkg.github.com/$GITHUB_REPOSITORY_OWNER/index.json --api-key ${GITHUB_TOKEN}
         env:
