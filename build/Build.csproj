@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <RunWorkingDirectory>$(MSBuildProjectDirectory)</RunWorkingDirectory>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Include="Cake.Frosting" />
+    <Using Include="Cake.Common.Tools.DotNet" />
+    <Using Include="Cake.Common.Tools.DotNet.MSBuild" />
+    <Using Include="Cake.Common.Tools.DotNet.Pack" />
+    <Using Include="Cake.Common.IO" />
+    <Using Include="Cake.Common" />
+    <Using Include="Cake.Core" />
+    <Using Include="Cake.Core.Diagnostics" />
+    <Using Include="Cake.Core.IO" />
+    <Using Include="Cake.FileHelpers" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Cake.FileHelpers" Version="6.1.3" />
+    <PackageReference Include="Cake.Frosting" Version="3.1.0" />
+  </ItemGroup>
+</Project>
