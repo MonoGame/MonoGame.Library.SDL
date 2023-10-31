@@ -8,9 +8,6 @@ public static class Program
             .UseWorkingDirectory("../")
             .UseContext<BuildContext>()
             .Run(args);
-
-    public static string GetArgument(this ICakeArguments args, string argName, string defaultArgValue)
-        => args.HasArgument(argName) ? args.GetArgument(argName) : defaultArgValue;
 }
 
 public class BuildContext : FrostingContext
@@ -19,7 +16,7 @@ public class BuildContext : FrostingContext
 
     public BuildContext(ICakeContext context) : base(context)
     {
-        ArtifactsDir = context.Arguments.GetArgument("artifactsDir", "artifacts");
+        ArtifactsDir = context.Arguments("artifactsDir", "artifacts").FirstOrDefault();
     }
 }
 
