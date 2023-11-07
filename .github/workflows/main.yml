@@ -32,7 +32,7 @@ jobs:
         with:
           submodules: recursive
       - name: Run CAKE
-        run: dotnet run --project ./build/Build.csproj
+        run: dotnet run --project ./build/Build.csproj -- --universalBinary=true
         env:
           ACTIONS_RUNTIME_TOKEN: ${{ env.ACTIONS_RUNTIME_TOKEN }}
           ACTIONS_RUNTIME_URL: "${{ env.ACTIONS_RUNTIME_URL }}"
@@ -52,7 +52,7 @@ jobs:
         with:
           submodules: recursive
       - name: Run CAKE
-        run: dotnet run --project ./build/Build.csproj -- --target=Package --libraryname=FreeImage --licensepath=freeimage/license-fi.txt
+        run: dotnet run --project ./build/Build.csproj -- --target=Package --universalBinary=true --libraryname=SDL --licensepath=sdl/LICENSE.txt
         env:
           ACTIONS_RUNTIME_TOKEN: ${{ env.ACTIONS_RUNTIME_TOKEN }}
           ACTIONS_RUNTIME_URL: "${{ env.ACTIONS_RUNTIME_URL }}"
