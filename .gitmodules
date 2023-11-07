@@ -1,3 +1,6 @@
 [submodule "sdl"]
 	path = sdl
 	url = https://github.com/libsdl-org/SDL.git
+[submodule "buildscripts"]
+	path = buildscripts
+	url = https://github.com/MonoGame/MonoGame.Library.BuildScripts.git

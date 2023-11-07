@@ -2,6 +2,8 @@
 namespace BuildScripts;
 
 [TaskName("Build Windows")]
+[IsDependentOn(typeof(PrepTask))]
+[IsDependeeOf(typeof(BuildLibraryTask))]
 public sealed class BuildWindowsTask : FrostingTask<BuildContext>
 {
     public override bool ShouldRun(BuildContext context) => context.IsRunningOnWindows();

@@ -2,6 +2,8 @@
 namespace BuildScripts;
 
 [TaskName("Build Linux")]
+[IsDependentOn(typeof(PrepTask))]
+[IsDependeeOf(typeof(BuildLibraryTask))]
 public sealed class BuildLinuxTask : FrostingTask<BuildContext>
 {
     public override bool ShouldRun(BuildContext context) => context.IsRunningOnLinux();

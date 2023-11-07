@@ -2,6 +2,8 @@
 namespace BuildScripts;
 
 [TaskName("Build macOS")]
+[IsDependentOn(typeof(PrepTask))]
+[IsDependeeOf(typeof(BuildLibraryTask))]
 public sealed class BuildMacOSTask : FrostingTask<BuildContext>
 {
     public override bool ShouldRun(BuildContext context) => context.IsRunningOnMacOs();

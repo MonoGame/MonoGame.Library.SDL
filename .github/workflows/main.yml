@@ -11,6 +11,8 @@ jobs:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-20.04]
     steps:
+      - name: Expose GitHub Runtime
+        uses: crazy-max/ghaction-github-runtime@v3
       - name: Add msbuild to PATH
         if: runner.os == 'Windows'
         uses: microsoft/setup-msbuild@v1.0.2
@@ -31,12 +33,9 @@ jobs:
           submodules: recursive
       - name: Run CAKE
         run: dotnet run --project ./build/Build.csproj
-      - name: Package artifacts
-        uses: actions/upload-artifact@main
-        with:
-          name: SDL-${{ matrix.os }}
-          path: |
-            artifacts/*
+        env:
+          ACTIONS_RUNTIME_TOKEN: ${{ env.ACTIONS_RUNTIME_TOKEN }}
+          ACTIONS_RUNTIME_URL: "${{ env.ACTIONS_RUNTIME_URL }}"
   deploy:
     name: deploy
     runs-on: ubuntu-latest
@@ -46,30 +45,17 @@ jobs:
     needs: [ build ]
     if: ${{ github.event_name == 'push' }}
     steps:
+      - name: Expose GitHub Runtime
+        uses: crazy-max/ghaction-github-runtime@v3
       - name: Clone repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Download artifacts for Windows x64
-        uses: actions/download-artifact@v3
-        with:
-          name: SDL-windows-latest
-          path: artifacts-windows-x64
-      - name: Download artifacts for macOS
-        uses: actions/download-artifact@v3
-        with:
-          name: SDL-macos-latest
-          path: artifacts-macos
-      - name: Download artifacts for Linux x64
-        uses: actions/download-artifact@v3
-        with:
-          name: SDL-ubuntu-20.04
-          path: artifacts-linux-x64
       - name: Run CAKE
-        run: dotnet run --project ./build/Build.csproj -- "--target=Package"
-      - name: Push packages
-        run: dotnet nuget push src/bin/Release/*.nupkg --source https://nuget.pkg.github.com/$GITHUB_REPOSITORY_OWNER/index.json --api-key ${GITHUB_TOKEN}
+        run: dotnet run --project ./build/Build.csproj -- --target=Package --libraryname=FreeImage --licensepath=freeimage/license-fi.txt
         env:
+          ACTIONS_RUNTIME_TOKEN: ${{ env.ACTIONS_RUNTIME_TOKEN }}
+          ACTIONS_RUNTIME_URL: "${{ env.ACTIONS_RUNTIME_URL }}"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Make a release
         uses: ncipollo/release-action@v1
