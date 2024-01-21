@@ -14,6 +14,8 @@ public sealed class BuildWindowsTask : FrostingTask<BuildContext>
         var buildDir = "sdl/build";
         context.CreateDirectory(buildDir);
         context.StartProcess("cmake", new ProcessSettings { WorkingDirectory = buildDir, Arguments = "-A x64 ../" });
+        //  Ensure statically linked
+        context.ReplaceTextInFiles(System.IO.Path.Combine(buildDir, "SDL2.vcxproj"), "MultiThreadedDLL", "MultiThreaded");
         context.StartProcess("msbuild", new ProcessSettings { WorkingDirectory = buildDir, Arguments = "SDL2.sln /p:Configuration=Release" });
 
         // Copy artifact
