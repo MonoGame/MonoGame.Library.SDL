@@ -13,6 +13,7 @@ public sealed class BuildWindowsTask : FrostingTask<BuildContext>
         // Build
         var buildDir = "sdl/build_x64";
         context.CreateDirectory(buildDir);
+        context.CreateDirectory($"{context.ArtifactsDir}/win-x64");
         context.StartProcess("cmake", new ProcessSettings { WorkingDirectory = buildDir, Arguments = "-A x64 -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded ../" });
         context.StartProcess("msbuild", new ProcessSettings { WorkingDirectory = buildDir, Arguments = "SDL2.sln /p:Configuration=Release" });
 
@@ -22,6 +23,7 @@ public sealed class BuildWindowsTask : FrostingTask<BuildContext>
 
         buildDir = "sdl/build_arm64";
         context.CreateDirectory(buildDir);
+        context.CreateDirectory($"{context.ArtifactsDir}/win-arm64");
         context.StartProcess("cmake", new ProcessSettings { WorkingDirectory = buildDir, Arguments = "-A ARM64 -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded ../" });
         context.StartProcess("msbuild", new ProcessSettings { WorkingDirectory = buildDir, Arguments = "SDL2.sln /p:Configuration=Release" });
 
