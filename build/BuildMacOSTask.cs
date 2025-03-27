@@ -18,6 +18,6 @@ public sealed class BuildMacOSTask : FrostingTask<BuildContext>
 
         // Copy artifact
         context.CreateDirectory(context.ArtifactsDir);
-        context.CopyFile("sdl/build/libSDL2-2.0.0.dylib", $"{context.ArtifactsDir}/libSDL2.dylib");
+        context.CopyFile("sdl/build/libSDL2-2.0.0.dylib", $"{context.ArtifactsDir}/libSDL2-2.0.0.dylib");
     }
 }
