@@ -41,6 +41,6 @@ public sealed class BuildLinuxTask : FrostingTask<BuildContext>
         // libSDL3.so -> libSDL3.so.0
         // libSDL3.so.0 -> libSDL3.so.0.2.10
         // libSDL3.so.0.2.10
-        context.CopyFile($"{buildDir}/libSDL3.so.0.2.10", $"{context.ArtifactsDir}/libSDL3.so.0.2.10");
+        context.CopyFile($"{buildDir}/libSDL3.so.0.2.10", $"{context.ArtifactsDir}/libSDL3.so.0");
     }
 }
