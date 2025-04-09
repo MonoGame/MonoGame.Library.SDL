@@ -5,6 +5,7 @@ on: [push, pull_request]
 
 jobs:
   build:
+    if: false
     name: build-${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:

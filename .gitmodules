@@ -4,7 +4,6 @@
 [submodule "sdl2-compat"]
 	path = sdl2-compat
 	url = https://github.com/libsdl-org/sdl2-compat
-[submodule "sdl3"]
-	path = sdl3
+[submodule "sdl"]
+	path = sdl
 	url = https://github.com/libsdl-org/SDL
-	branch = release-3.2.x
