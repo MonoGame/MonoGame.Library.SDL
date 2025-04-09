@@ -1,6 +1,9 @@
-[submodule "sdl"]
-	path = sdl
-	url = https://github.com/libsdl-org/SDL.git
 [submodule "buildscripts"]
 	path = buildscripts
 	url = https://github.com/MonoGame/MonoGame.Library.BuildScripts.git
+[submodule "sdl2-compat"]
+	path = sdl2-compat
+	url = https://github.com/libsdl-org/sdl2-compat
+[submodule "sdl"]
+	path = sdl
+	url = https://github.com/libsdl-org/SDL
