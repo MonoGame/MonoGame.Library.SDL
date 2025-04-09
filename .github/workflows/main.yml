@@ -5,7 +5,6 @@ on: [push, pull_request]
 
 jobs:
   build:
-    if: false
     name: build-${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -53,7 +52,7 @@ jobs:
         with:
           submodules: recursive
       - name: Run CAKE
-        run: dotnet run --project ./build/Build.csproj -- --target=Package --universalBinary=true --libraryname=SDL --licensepath=sdl3/LICENSE.txt
+        run: dotnet run --project ./build/Build.csproj -- --target=Package --universalBinary=true --libraryname=SDL --licensepath=sdl/LICENSE.txt
         env:
           ACTIONS_RUNTIME_TOKEN: ${{ env.ACTIONS_RUNTIME_TOKEN }}
           ACTIONS_RUNTIME_URL: "${{ env.ACTIONS_RUNTIME_URL }}"
