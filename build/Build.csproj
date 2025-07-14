@@ -27,7 +27,6 @@
   <ItemGroup>
     <PackageReference Include="Cake.FileHelpers" Version="7.0.0" />
     <PackageReference Include="Cake.Frosting" Version="5.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Setup.Configuration.Interop" Version="3.*" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

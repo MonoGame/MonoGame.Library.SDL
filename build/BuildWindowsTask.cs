@@ -1,7 +1,4 @@
 
-using Microsoft.VisualStudio.Setup.Configuration;
-using System.Runtime.InteropServices;
-
 namespace BuildScripts;
 
 [TaskName("Build Windows")]
@@ -52,7 +49,7 @@ public sealed class BuildWindowsTask : FrostingTask<BuildContext>
         if (!process.EndsWith(".exe"))
             process += ".exe";
 
-        // check if process exist on PATH env
+        // Check if process exist on PATH env
 
         var split = Environment.GetEnvironmentVariable("PATH")?.Split(';');
         if (split != null)
@@ -70,86 +67,29 @@ public sealed class BuildWindowsTask : FrostingTask<BuildContext>
 
     private string GetVisualStudioPath()
     {
-        // This code to retrieve where Visual Studio is installed is adapted from
-        // https://github.com/microsoft/MSBuildLocator
-        // Surprisingly, this package has code to retrieve a VS installation but
-        // this feature is disabled from the public nuget... so adapting it from source
+        // We can use vswhere.exe which ships with VS2017 and later.
+        // Microsoft guarantees that it is always installed in %ProgramFiles(x86)%\Microsoft Visual Studio\Installer
 
-        // This will only detect Visual Studio 2015 and above
+        System.Diagnostics.Process process = new System.Diagnostics.Process();
+        process.StartInfo.FileName = System.IO.Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%"), "Microsoft Visual Studio\\Installer\\vswhere.exe");
+        process.StartInfo.Arguments = "-latest";
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.CreateNoWindow = true;
+        process.Start();
+        
+        string result = process.StandardOutput.ReadToEnd();
 
-        string path = string.Empty;
-        Version version = new Version();
-
-        try
+        if (!string.IsNullOrEmpty(result))
         {
-            // This code is not obvious. See the sample (link above) for reference.
-            var query = (ISetupConfiguration2)GetQuery();
-            var e = query.EnumAllInstances();
-
-            int fetched;
-            var instances = new ISetupInstance[1];
-            do
+            var lines = result.Split("\r\n");
+            foreach (var line in lines)
             {
-                // Call e.Next to query for the next instance (single item or nothing returned).
-                e.Next(1, instances, out fetched);
-                if (fetched <= 0) continue;
-
-                var instance = (ISetupInstance2)instances[0];
-                InstanceState state = instance.GetState();
-
-                // If the install was complete
-                if (state == InstanceState.Complete ||
-                    (state.HasFlag(InstanceState.Registered) && state.HasFlag(InstanceState.NoRebootRequired)))
-                {
-                    if (!Version.TryParse(instance.GetInstallationVersion(), out var current))
-                        continue;
-
-                    // We want the highest version installed
-                    if (current <= version)
-                        continue;
-
-                    version = current;
-                    path = instance.GetInstallationPath();
-                }
+                if (line.StartsWith("installationPath: "))
+                    return line.Substring(18);
             }
-            while (fetched > 0);
-        }
-        catch (COMException)
-        {
-        }
-        catch (DllNotFoundException)
-        {
-            // This is OK, VS "15" or greater likely not installed.
         }
 
-        return path;
+        return string.Empty;
     }
-
-    private static ISetupConfiguration GetQuery()
-    {
-        const int REGDB_E_CLASSNOTREG = unchecked((int)0x80040154);
-
-        try
-        {
-            // Try to CoCreate the class object.
-            return new SetupConfiguration();
-        }
-
-        catch (COMException ex) when (ex.ErrorCode == REGDB_E_CLASSNOTREG)
-        {
-            // Try to get the class object using app-local call.
-            ISetupConfiguration query;
-            var result = GetSetupConfiguration(out query, IntPtr.Zero);
-
-            if (result < 0)
-                throw new COMException($"Failed to get {nameof(query)}", result);
-
-            return query;
-        }
-    }
-
-    [DllImport("Microsoft.VisualStudio.Setup.Configuration.Native.dll", ExactSpelling = true, PreserveSig = true)]
-    private static extern int GetSetupConfiguration(
-        [MarshalAs(UnmanagedType.Interface)][Out] out ISetupConfiguration configuration,
-        IntPtr reserved);
 }
