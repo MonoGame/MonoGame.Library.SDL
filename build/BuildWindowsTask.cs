@@ -1,3 +1,4 @@
+using Cake.Common.Tools.VSWhere.Latest;
 
 namespace BuildScripts;
 
@@ -10,14 +11,16 @@ public sealed class BuildWindowsTask : FrostingTask<BuildContext>
 
     public override void Run(BuildContext context)
     {
+        var vswhere = new VSWhereLatest(context.FileSystem, context.Environment, context.ProcessRunner, context.Tools);
+
         string cmake = "cmake";
         string msbuild = "msbuild";
 
         // If processes are not on PATH, we want to retrieve the Visual Studio installation
         if (!IsOnPATH(cmake))
-            cmake = System.IO.Path.Combine(GetVisualStudioPath(), "Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe");
+            cmake = vswhere.Latest(new VSWhereLatestSettings()).FullPath + @"\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe";
         if (!IsOnPATH(msbuild))
-            msbuild = System.IO.Path.Combine(GetVisualStudioPath(), "MSBuild\\Current\\Bin\\MSBuild.exe");
+            msbuild = vswhere.Latest(new VSWhereLatestSettings()).FullPath + @"\MSBuild\Current\Bin\MSBuild.exe";
 
         // Build
         var buildDir = "sdl/build_x64";
@@ -63,33 +66,5 @@ public sealed class BuildWindowsTask : FrostingTask<BuildContext>
         }
 
         return false;
-    }
-
-    private string GetVisualStudioPath()
-    {
-        // We can use vswhere.exe which ships with VS2017 and later.
-        // Microsoft guarantees that it is always installed in %ProgramFiles(x86)%\Microsoft Visual Studio\Installer
-
-        System.Diagnostics.Process process = new System.Diagnostics.Process();
-        process.StartInfo.FileName = System.IO.Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%"), "Microsoft Visual Studio\\Installer\\vswhere.exe");
-        process.StartInfo.Arguments = "-latest";
-        process.StartInfo.UseShellExecute = false;
-        process.StartInfo.RedirectStandardOutput = true;
-        process.StartInfo.CreateNoWindow = true;
-        process.Start();
-        
-        string result = process.StandardOutput.ReadToEnd();
-
-        if (!string.IsNullOrEmpty(result))
-        {
-            var lines = result.Split("\r\n");
-            foreach (var line in lines)
-            {
-                if (line.StartsWith("installationPath: "))
-                    return line.Substring(18);
-            }
-        }
-
-        return string.Empty;
     }
 }
