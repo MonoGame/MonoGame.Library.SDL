@@ -37,7 +37,7 @@ public sealed class BuildWindowsTask : FrostingTask<BuildContext>
         context.CreateDirectory(buildDir);
         context.CreateDirectory($"{context.ArtifactsDir}/win-arm64");
         context.StartProcess(cmake, new ProcessSettings { WorkingDirectory = buildDir, Arguments = "-A ARM64 -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded ../" });
-        context.StartProcess(msbuild, new ProcessSettings { WorkingDirectory = buildDir, Arguments = "SDL2.sln /p:Configuration=Release" });
+        context.StartProcess(msbuild, new ProcessSettings { WorkingDirectory = buildDir, Arguments = "SDL2.slnx /p:Configuration=Release" });
 
         // Copy artifact
         context.CreateDirectory(context.ArtifactsDir);
