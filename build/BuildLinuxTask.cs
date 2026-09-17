@@ -13,8 +13,8 @@ public sealed class BuildLinuxTask : FrostingTask<BuildContext>
         // Build
         var buildDir = "sdl/build";
         context.CreateDirectory(buildDir);
-        context.StartProcess("cmake", new ProcessSettings { WorkingDirectory = buildDir, Arguments = "../ -DCMAKE_BUILD_TYPE=Release" });
-        context.StartProcess("make", new ProcessSettings { WorkingDirectory = buildDir });
+        context.StartProcessWithDocker("cmake", new ProcessSettings { WorkingDirectory = buildDir, Arguments = "../ -DCMAKE_BUILD_TYPE=Release" });
+        context.StartProcessWithDocker("make", new ProcessSettings { WorkingDirectory = buildDir });
 
         // Copy artifact
         context.CreateDirectory(context.ArtifactsDir);
